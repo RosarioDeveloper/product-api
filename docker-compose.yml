@@ -31,7 +31,6 @@ services:
     volumes:
       - ./:/home/node/product_api
     command:
-      - dumb-init node ace migration:run
       - dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
 
 volumes:
