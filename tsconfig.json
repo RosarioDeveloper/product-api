@@ -28,6 +28,7 @@
     "types": [
       "@adonisjs/core",
       "@adonisjs/repl",
+      "@types/jest"
     ]
   }
 }
