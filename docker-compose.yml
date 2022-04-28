@@ -12,6 +12,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5433:5432
+    networks:
+      - product_api_network
 
   app:
     container_name: product_api_app
@@ -31,6 +33,11 @@ services:
     volumes:
       - ./:/home/node/product_api
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
+    networks:
+      - product_api_network
+networks:
+  product_api_network:
+    driver: bridge
 
 volumes:
   postgres_volume:
