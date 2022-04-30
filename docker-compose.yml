@@ -8,8 +8,9 @@ services:
       - postgres_volume:/var/lib/postgresql/data
       #- ./dockerConfig/postgres-dev-init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: product_api
+      POSTGRES_USER: rosario
+      POSTGRES_PASSWORD: rosario
     ports:
       - 5433:5432
     networks:
@@ -26,15 +27,19 @@ services:
     ports:
       - ${PORT}:${PORT}
       - 9229:9229
+    networks:
+      - product_api_network
     env_file:
       - .env
-    environment:
-      - PG_HOST=postgres
+    #environment:
+    #  - PG_HOST=postgres
+    #  - POSTGRES_DB=product_api
+    #  - POSTGRES_USER=rosario
+    #  - POSTGRES_PASS=rosario
     volumes:
       - ./:/home/node/product_api
     command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
-    networks:
-      - product_api_network
+
 networks:
   product_api_network:
     driver: bridge
