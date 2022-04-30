@@ -7,6 +7,7 @@ export default class Products extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.integer('category_id').unsigned().notNullable()
+      table.foreign('category_id').references('id').inTable('categories').onDelete('cascade')
 
       table.string('name', 255).notNullable()
       table.string('lable', 255).notNullable()
