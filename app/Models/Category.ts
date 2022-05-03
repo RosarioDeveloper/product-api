@@ -1,6 +1,15 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeSave,
+  BelongsTo,
+  belongsTo,
+  column,
+  HasOne,
+  hasOne,
+} from '@ioc:Adonis/Lucid/Orm'
 import { string } from '@ioc:Adonis/Core/Helpers'
+import Product from './Product'
 
 export default class Category extends BaseModel {
   public static table = 'categories'
@@ -30,4 +39,10 @@ export default class Category extends BaseModel {
       category.lable = string.dashCase(category.name)
     }
   }
+
+  //Prodcuts relationship
+  @hasOne(() => Product, {
+    foreignKey: 'category_id',
+  })
+  public product: HasOne<typeof Product>
 }
