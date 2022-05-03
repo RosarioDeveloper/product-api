@@ -1,3 +1,6 @@
-CREATE USER rosario with encrypted password 'rosario';
+DROP DATABASE IF EXISTS product_api;
 CREATE DATABASE product_api;
-GRANT ALL PRIVILEGES ON DATABASE product_api TO rosario;
+
+
+/* CREATE USER rosario with encrypted password 'rosario';
+GRANT ALL PRIVILEGES ON DATABASE product_api TO rosario; */
