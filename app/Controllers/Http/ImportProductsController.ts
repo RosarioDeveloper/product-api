@@ -21,7 +21,7 @@ export default class ImportProductsController {
       const stfile = await Drive.get(Application.tmpPath(`uploads/${fileName}`))
 
       //const slug = string.dashCase(string.sentenceCase(categoryName))
-      const category = await Category.findBy('lable', categoryName)
+      const category = await Category.findBy('name', categoryName)
 
       if (!category)
         return response.unprocessableEntity({
