@@ -8,3 +8,16 @@ Route.group(() => {
   Route.put('/update/:id', 'CategoriesController.update')
   Route.delete('/delete/:id', 'CategoriesController.delete')
 }).prefix('categories')
+
+//Route Group Productss
+Route.group(() => {
+  Route.get('/', 'ProductsController.index')
+  Route.get('/:id', 'ProductsController.show')
+  Route.post('/create', 'ProductsController.store')
+  Route.put('/update/:id', 'ProductsController.update')
+  Route.delete('/delete/:id', 'ProductsController.delete')
+}).prefix('products')
+
+//Route export and inport data
+Route.get('/:categoryName/export', 'ExportProductsController.export')
+Route.post('/:categoryName/import', 'ImportProductsController.import')
