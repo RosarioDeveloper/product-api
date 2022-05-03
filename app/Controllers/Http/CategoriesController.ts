@@ -6,14 +6,14 @@ import CategoryValidator from 'App/Validators/CategoryValidator'
 
 export default class CategoriesController {
   async index({ response }: HttpContextContract) {
-    const categories = await Category.query().orderBy('id', 'desc')
+    const categories = await Category.all()
 
     return response.ok(categories)
   }
 
   async store({ response, request }: HttpContextContract) {
-    const requestValidated = await request.validate(CategoryValidator)
-    const category = await Category.create(requestValidated)
+    const validatedReq = await request.validate(CategoryValidator)
+    const category = await Category.create(validatedReq)
 
     return response.ok(category)
   }
@@ -23,34 +23,67 @@ export default class CategoriesController {
     const category = await Category.find(id)
 
     if (!category) {
-      return response.notFound({ message: 'Categoria não encontrada' })
+      return response.unprocessableEntity({
+        errors: {
+          message: 'Categoria não encontrada',
+        },
+      })
     }
 
     return response.ok(category)
   }
 
   async update({ response, request, params }: HttpContextContract) {
-    const requestValidated = await request.validate(CategoryValidator)
+    const validatedReq = await request.validate(CategoryValidator)
 
     const { id } = params
     const category = await Category.find(id)
 
     if (!category) {
-      return response.notFound({ message: 'Categoria não encontrada' })
+      return response.unprocessableEntity({
+        errors: {
+          message: 'Categoria não encontrada',
+        },
+      })
     }
 
-    category.name = requestValidated.name
-    category.description = requestValidated.description as any
-
-    category.save()
+    await category.merge(validatedReq).save()
 
     return response.ok(category)
   }
 
   async delete({ params, response }: HttpContextContract) {
     const { id } = params
-    await Category.query().where({ id }).delete()
+    const category = await Category.query()
+      .where({ id })
+      .preload('product', (query) => {
+        query.select('id', 'category_id')
+      })
+      .first()
 
-    return response.ok({ message: 'Categoria eliminada com sucesso' })
+    if (!category) {
+      return response.unprocessableEntity({
+        errors: {
+          message: 'Categoria não encontrada',
+        },
+      })
+    }
+
+    if (category.product?.id) {
+      return response.unprocessableEntity({
+        errors: {
+          message:
+            'Esta categoria não pode ser eliminada porque existem produtos relacionados a ela',
+        },
+      })
+    }
+
+    category.delete()
+
+    return response.ok({
+      errors: {
+        message: 'Categoria eliminada com sucesso',
+      },
+    })
   }
 }
