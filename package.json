@@ -2,9 +2,12 @@
   "name": "product-api",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "16.13"
+  },
   "scripts": {
     "dev": "docker-compose up -d --force-recreate",
-    "dc:up": "docker-compose up -d && docker-compose exec app node ace migration:run && node ace db:seeder && docker-compose logs",
+    "dc:up": "docker-compose up -d && docker-compose exec app /bin/sh && node ace migration:run && node ace db:seed && docker-compose logs",
     "dc:down": "docker-compose down",
     "dc:app": "docker-compose exec app /bin/sh",
     "dc:db": "docker-compose exec postgres_db /bin/bash",
