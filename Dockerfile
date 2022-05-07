@@ -2,7 +2,9 @@ ARG NODE_IMAGE=node:16-alpine
 
 #Create base layer wich we'll be use later
 FROM $NODE_IMAGE AS base
-RUN apk --no-cache add dumb-init bash
+RUN apk --no-cache add dumb-init bash \
+  yarn --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+
 RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
 USER node
