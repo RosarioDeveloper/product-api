@@ -1,39 +1,34 @@
 ARG NODE_IMAGE=node:16-alpine
 
+#Create base layer wich we'll be use later
 FROM $NODE_IMAGE AS base
-RUN apk --no-cache add dumb-init
-
-#Create app folder and set user permission to folder
-RUN mkdir -p /home/node/product_api && chown node:node /home/node/product_api
-
-WORKDIR /home/node/product_api/
+RUN apk --no-cache add dumb-init bash
+RUN mkdir -p /home/node/app && chown node:node /home/node/app
+WORKDIR /home/node/app
 USER node
 RUN mkdir tmp
 
-#copying package.json, package.lock.json, yarn.lock
+#Installing all dependencies of the our app
 FROM base AS dependencies
 COPY --chown=node:node ./package*.json ./
 COPY --chown=node:node ./yarn.lock ./
+COPY --chown=node:node ./docker-entrypoint.sh ./
+RUN chmod +x ./docker-entrypoint.sh
 COPY --chown=node:node . .
 
-#Bulding project
+#Build process
 FROM dependencies AS build
 RUN node ace build --production
 
-#Production Mode
+#Crete production mod
 FROM base AS production
 ENV NODE_ENV=production
-ENV PORT=$PORT
+ENV PORT=3333
 ENV HOST=0.0.0.0
-
 COPY --chown=node:node ./package*.json ./
 RUN npm ci --production
+COPY --chown=node:node --from=build /home/node/app/build .
 
-COPY --chown=node:node --from=build /home/node/product_api/build .
-
-#Instaling yarn and install dependencies
-RUN npm i -g yarn && yarn
-
-
-EXPOSE $PORT
+EXPOSE 3333
 CMD [ "dumb-init", "node", "server.js" ]
+
